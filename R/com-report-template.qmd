@@ -1,0 +1,124 @@
+---
+author: "Church Army's Research Team"
+format:
+  docx:
+    reference-doc: caru-template.docx
+    fig-width: 7
+editor: visual
+params: 
+  com_name: "attercliffe-and-darnall"
+title: '`r paste("Annual summary report: ", params[["com_name"]], " Centre of Mission")`'
+execute: 
+  echo: false
+  warning: false
+---
+
+```{r libraries}
+#| output: false
+library(ggplot2)
+library(knitr)
+library(purrr)
+library(here)
+library(stringr)
+library(dplyr)
+
+com_name <- params[["com_name"]]
+
+report_data <-
+  readRDS(here("data", "com-report-data", 
+               paste(com_name, "report-data.RDS", sep = "_")))
+```
+
+## This is `r report_data[["labels"]][["com_label"]]` CoM
+
+## Age
+
+```{r age_plot}
+# params[["plots"]][["age-five-year"]]
+report_data[["plots"]][["age_five_year"]]
+```
+
+```{r age_table}
+report_data[["tables"]][["age_five_year"]] |> 
+  kable()
+```
+
+## Ethnicity
+
+```{r ethnicity_plot}
+report_data[["plots"]][["ethnicity"]]
+```
+
+```{r ethnicity_table}
+report_data[["tables"]][["ethnicity"]] |> 
+  kable()
+```
+
+## Religion
+
+```{r religion_plot}
+report_data[["plots"]][["religion"]]
+```
+
+```{r religion_table}
+report_data[["tables"]][["religion"]] |> 
+  kable()
+```
+
+## General Health
+
+```{r general_health_plot}
+report_data[["plots"]][["general_health"]]
+```
+
+```{r general_health_table}
+report_data[["tables"]][["general_health"]] |> 
+  kable()
+```
+
+## Household Composition
+
+### Overview of household composition
+
+```{r household_composition_grouped_plot}
+report_data[["plots"]][["household_grouped"]]
+```
+
+```{r household_composition_super_table}
+report_data[["tables"]][["household_composition_super"]] |> 
+  kable()
+```
+
+### Couples
+
+```{r couples_plot}
+report_data[["plots"]][["household_couples"]]
+```
+
+```{r couples_table}
+report_data[["tables"]][["household_composition_couple"]] |> 
+  kable()
+```
+
+### Lone occupants & single parents
+
+```{r lone_plot}
+report_data[["plots"]][["household_lone"]]
+```
+
+```{r lone_table}
+report_data[["tables"]][["household_composition_lone"]] |> 
+  kable()
+```
+
+### Other
+
+```{r other_plot}
+report_data[["plots"]][["other_households"]]
+```
+
+```{r other_table}
+report_data[["tables"]][["household_composition_other"]] |> 
+  kable()
+```
+

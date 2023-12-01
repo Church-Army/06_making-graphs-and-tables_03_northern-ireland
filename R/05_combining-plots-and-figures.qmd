@@ -1,0 +1,74 @@
+---
+title: "Combining plots and figures"
+author: "Dave"
+format: html
+editor: visual
+---
+
+## Libraries
+
+```{r libraries}
+library(here)
+library(fs)
+
+library(purrr)
+library(dplyr)
+library(lobstr)
+```
+
+## Read in Data
+
+```{r read_in_data}
+plots <- readRDS(here("data", "plots.RDS"))
+tables <- readRDS(here("data", "tables.RDS"))
+split <- readRDS(here("data", "split-formatted-ordered-grouped.RDS"))
+```
+
+## Make metadata
+
+```{r make_metadata}
+metadata <- map(
+  split[[1]],
+  \(x){
+    select(x, ends_with("_label")) |>
+      summarise(.by = everything()) |>
+      as.list()
+  }
+)
+```
+
+## Check orders
+
+```{r check_orders}
+stopifnot(names(metadata) == names(table), names(tables) == names(plots))
+```
+
+## Combine
+
+```{r combine}
+big_list <-
+  pmap(
+    list(tables, plots, labels = metadata),
+    \(tables, plots, labels){
+      list(tables = tables, plots = plots, labels = labels)
+    }
+  )
+
+tree(big_list, max_depth = 3, max_length = 30)
+```
+
+## Save
+
+```{r save_data}
+crd <- dir_create(here("data", "com-report-data"))
+
+iwalk(
+  big_list,
+  \(com_data, com_name){
+    file_name <- paste(com_name, "report-data.RDS", sep = "_")
+    save_path <- file.path(crd, file_name)
+
+    saveRDS(com_data, save_path)
+  }
+)
+```

@@ -1,0 +1,62 @@
+---
+title: "Producing reports"
+author: "Dave"
+format: html
+editor: visual
+---
+
+## Libraries
+
+```{r libraries}
+library(fs)
+library(here)
+
+library(purrr)
+library(stringr)
+library(quarto)
+```
+
+## Read in Data
+
+```{r read_in_data}
+com_names <-
+  dir_ls(here("data", "com-report-data")) |>
+  str_extract("(?<=/)[^/]+(?=\\.RDS)") |>
+  str_extract("(?<=^).+(?=_)")
+```
+
+## Make reports
+
+```{r make_reports}
+file_names <-
+  map_chr(
+    com_names,
+    \(com_name){
+      
+      cat("Rendering", com_name, "\n")
+      
+      file_name <- paste(com_name, "report.docx", sep = "_")
+
+      quarto_render(
+        input = here("R", "com-report-template.qmd"),
+        output_format = "docx",
+        output_file = file_name,
+        execute_params = list(com_name = com_name)
+      )
+
+      return(file_name)
+    }
+  )
+
+cool_save_dir <- dir_create(here("data", "com-reports"))
+
+walk2(
+  file_names, com_names,
+  \(file_name, com_name){
+    file_move(
+      file_name,
+      here(cool_save_dir, str_c(com_name, "annual-summary.docx", sep = "_"))
+    )
+  }
+)
+```

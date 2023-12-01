@@ -1,0 +1,114 @@
+---
+title: "Group and order factors"
+author: "Dave"
+format: html
+editor: visual
+---
+
+## Libraries
+
+```{r libraries}
+#| output: false
+library(fs)
+library(here)
+
+library(dplyr)
+library(purrr)
+library(forcats)
+library(ggplot2)
+library(carutools)
+library(scales)
+```
+
+## Read data
+
+```{r read_data}
+split <- readRDS(here("data", "england-and-wales_split-formatted.RDS"))
+names(split)
+```
+
+### Split data into CoM
+
+This will allow us to order the category factors differently for each CoM as necessary
+
+```{r split_into_com}
+split <- map(split, 
+             \(x){
+               out <- group_by(x, com)
+               list_names <- group_keys(out)[["com"]]
+               
+               out <- 
+                 group_split(out) |> 
+                 as.list() |> 
+                 set_names(list_names)
+               
+               return(out)
+             })
+
+lengths(split)
+```
+
+## Helpers
+
+```{r helpers}
+quick_plot <- function(x, at = 1){
+  ggplot(split[[x]][[at]]) +
+    geom_col(aes(x = category, y = proportion, fill = level),
+             colour = "black", position = "dodge2") +
+    ca_scale_fill_discrete() + 
+    scale_y_continuous(labels = percent) +
+    theme_minimal()
+}
+
+order_by_level <- function(x, level = "centre-of-mission"){
+  
+  com_rows <- x[["level"]] == "centre-of-mission"
+  props <- x[["proportion"]][com_rows]
+  good_levels <- x[["category"]][com_rows][order(props, decreasing = TRUE)]
+  
+  out <- mutate(x, category = factor(category, levels = good_levels))
+  return(out)
+  }
+
+lump_category <- function(x, n){
+  out <- 
+    mutate(x, category = fct_lump_n(category, n, w = proportion)) |> 
+    group_by(across(c(-proportion, -count))) |> 
+    summarise(across(c(proportion, count), sum), .groups = "drop")
+  
+  return(out)
+}
+
+```
+
+### Group and order ethnicity
+
+```{r group_and_order ethnicity}
+
+quick_plot("ethnicity")
+
+split[["ethnicity"]] <-map(split[["ethnicity"]], order_by_level)
+
+quick_plot("ethnicity")
+```
+
+#### Group and order religion
+
+```{r group_and_order_religion}
+quick_plot("religion")
+
+split[["religion"]] <-
+  map(split[["religion"]],
+      \(x) {
+        order_by_level(x) |>
+          lump_category(5)
+      })
+
+quick_plot("religion")
+```
+
+## Save
+
+```{r save_data}
+saveRDS(split, here("data", "split-formatted-ordered-grouped.RDS"))
+```

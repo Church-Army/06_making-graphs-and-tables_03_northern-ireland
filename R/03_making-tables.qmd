@@ -1,0 +1,199 @@
+---
+title: "Making tables"
+author: "Dave"
+format: html
+editor: visual
+---
+
+## Libraries
+
+```{r libraries}
+library(fs)
+library(here)
+
+library(dplyr)
+library(purrr)
+library(knitr)
+library(scales)
+library(stringr)
+library(tibble)
+library(tidyr)
+library(rlang)
+
+library(lobstr)
+```
+
+## Read in data
+
+```{r read_data}
+split <- readRDS(here("data", "split-formatted-ordered-grouped.RDS"))
+```
+
+## Make tables
+
+### Helpers
+
+```{r helpers}
+
+capitalise <- function(x, start = 1, end = 1){
+  
+  if(sign(start) == -1) start <- nchar(x) + 1 + start
+  if(sign(end) == -1) end <- nchar(x) + 1 + end
+  
+  str_c(
+    str_sub(x, 0, start - 1),
+    str_to_upper(str_sub(x, start, end)), 
+    str_sub(x, end + 1, -1)
+  )
+  
+}
+
+make_table <- function(x, 
+                       cat_col = category,
+                       stat_col = proportion,
+                       arrange_col = category){
+
+  arrange_col <- enexpr(arrange_col)
+  stat_col <- enexpr(stat_col)
+  cat_col  <- enexpr(cat_col)
+  
+  nation <- unique(x[["nation"]])
+  
+  out <-
+    arrange(x, !!arrange_col) |> 
+    select(level, !!cat_col, !!stat_col) |> 
+    mutate(value = percent(!!stat_col, 1)) |> 
+    select(-!!stat_col) |> 
+    pivot_wider(names_from = level) |> 
+    rename(CoM = "centre-of-mission",
+           !!nation := "nation") |> 
+    mutate(category = str_remove_all(!!cat_col, "\n")) |> 
+    select(category, CoM, diocese, !!nation) |>
+    rename_with(capitalise, -1) |> 
+    column_to_rownames("category")
+  
+  return(out)
+}
+
+try_table <- function(x, ...) tryCatch(make_table(x, ...), error = \(cnd) NA)
+```
+
+### Age Five Year Table
+
+```{r age_five_year}
+
+age_five_year <-
+  map(split[["age-five-year"]],
+      \(x){
+        out <- 
+          group_by(x, across(c(-count, -proportion, -old_category))) |> 
+          summarise(across(c(count, proportion), sum), .groups = "drop")
+        
+        out <- try_table(out)
+        
+        return(out)
+        })
+
+age_five_year[[1]]
+kable(age_five_year[[1]])
+```
+
+### Ethnicity table
+
+```{r ethnicity}
+ethnicity <- map(split[["ethnicity"]], try_table)
+kable(ethnicity[[1]])
+```
+
+#### Religion
+
+```{r religion_table}
+religion <- map(split[["religion"]], try_table)
+kable(religion[[1]])
+```
+
+#### General Health
+
+```{r general_health_table}
+general_health <- map(split[["general-health"]], try_table)
+kable(general_health[[1]])
+```
+
+#### Household composition
+
+Super:
+
+```{r household_composition_super}
+household_composition_super <-
+  map(split[["household-composition"]],
+      \(x){
+        group_by(x, across(c(-proportion, -count, -category))) |> 
+          summarise(across(c(proportion, count), sum), .groups = "drop") |> 
+          try_table(super_category, arrange_col = super_category)
+      })
+
+kable(household_composition_super[[1]])
+```
+
+Basic:
+
+```{r basic}
+household_composition <- 
+  map(split[["household-composition"]],
+      \(x) try_table(x, arrange_col = super_category))
+
+kable(household_composition[[1]])
+```
+
+Lone parents and lone occupants/Couples/Everyone else
+
+```{r lone}
+
+household_subcategory_table <- function(...){
+  
+  map(split[["household-composition"]],
+      \(x){
+        filter(x, str_detect(category, ...)) |> 
+          try_table(arrange_col = -proportion)
+      })
+}
+
+  
+household_composition_lone <- 
+  household_subcategory_table("[Ll]one")
+
+kable(household_composition_lone[[1]])
+
+household_composition_couple <-
+  household_subcategory_table("[Cc]ouple")
+
+kable(household_composition_couple[[1]])
+
+household_composition_other <- 
+  household_subcategory_table("([Ll]one)|([Cc]ouple)", negate = TRUE)
+
+kable(household_composition_other[[1]])
+```
+
+## Save Tables
+
+```{r save_tables}
+tables <- 
+  list(
+    age_five_year = age_five_year,
+    ethnicity = ethnicity,
+    general_health = general_health,
+    religion = religion,
+    household_composition = household_composition,
+    household_composition_super = household_composition_super,
+    household_composition_lone = household_composition_lone,
+    household_composition_couple = household_composition_couple,
+    household_composition_other = household_composition_other
+  )
+
+tables <- list_transpose(tables)
+
+tree(tables, max_depth = 2)
+
+saveRDS(tables, here("data", "tables.RDS"))
+```

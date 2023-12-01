@@ -1,0 +1,297 @@
+---
+title: "Making graphs"
+author: "Dave"
+format: html
+editor: visual
+---
+
+## Libraries
+
+```{r libraries}
+#| output: false
+library(fs)
+library(here)
+
+library(dplyr)
+library(ggplot2)
+library(purrr)
+library(carutools)
+library(scales)
+library(stringr)
+library(snakecase) #for to_title_case()
+```
+
+## Load Data
+
+```{r load_data}
+split <- readRDS(here("data", "split-formatted-ordered-grouped.RDS"))
+```
+
+## Make graphs
+
+### Helpers
+
+```{r helpers}
+
+in_x_breaks <- c(2, 3, 4, 5, 7, 10, 20)
+in_x_labels <- str_c("1/", in_x_breaks)
+in_x_values <- 1/in_x_breaks
+
+
+quick_plot <- function(x, title = "", x_label = "",
+                       in_x_scale = TRUE){
+
+  this_nation <- unique(x[["nation_label"]])
+  this_com <-
+    unique(x[["com_label"]]) |> 
+    str_c("Centre of Mission", sep = " ")
+  
+  if(!in_x_scale){
+    y_scale <- 
+      scale_y_continuous(labels = label_percent(), name = "% Population",
+                         breaks = seq(0,1, 0.05))
+  } else {
+      y_scale <-
+        scale_y_continuous(
+          labels = label_percent(), name = "% Population", breaks = seq(0,1, 0.05),
+          sec.axis = dup_axis(breaks = in_x_values,
+                              labels = in_x_labels,
+                              name = "One person in..."))        
+    }
+  
+  x <-
+    mutate(x,
+           level =
+             case_match(level, "nation" ~ this_nation, .default = level) |>
+             str_replace_all("-", " ") |> 
+             to_title_case())
+  
+  ggplot(x, aes(x = category, y = proportion, fill = level)) + 
+    geom_col(colour = "black",
+             position = "dodge2") + 
+    ca_scale_fill_discrete(name = "Area") + 
+    y_scale + 
+    labs(x = x_label,
+         caption = "Source: ONS Census 2021") +
+    ggtitle(title, this_com) +
+    theme_minimal() + 
+    theme(panel.grid.major.x = element_blank(),
+          panel.grid.minor.x = element_blank(),
+          panel.grid.minor.y = element_blank())
+}
+
+factor_arrange <- function(x, order_col = category,
+                           val_col = proportion,
+                           at_level = "centre-of-mission"){
+  
+  ord <- enexpr(order_col)
+  val <- enexpr(val_col)
+  
+  com_tib <- 
+    filter(x, level == at_level)
+  
+  good_levels <- 
+    pull(com_tib, !!ord)[order(pull(com_tib, !!val), decreasing = TRUE)]
+  
+  out <- 
+    mutate(x, !!ord := ordered(!!ord, levels = good_levels))
+  
+  return(out)
+}
+
+```
+
+### Age plot
+
+```{r make_age_plot}
+five_year_age_plot <- 
+  map(split[["age-five-year"]],
+      \(x){
+        summarise(x, proportion = sum(proportion),
+                  .by = c(level, category,
+                          com_label, nation_label)) |> 
+          quick_plot("Population ages", "Age") +
+          scale_x_discrete(labels = \(l) str_replace(l, " (?=years)", "\n"))
+      })
+
+five_year_age_plot[[1]]
+```
+
+### Ethnicity plot
+
+```{r make_ethnicity_plot}
+suppressMessages({
+  
+  ethnicity_plot <- 
+    map(split[["ethnicity"]],
+        \(x){
+          quick_plot(x, "Population ethnicities", "Ethnicity") + 
+            scale_y_continuous(name = "% Population", labels = label_percent(), 
+                               limits = c(0,1), breaks = seq(0, 1, 0.1),
+                               sec.axis = dup_axis(breaks = in_x_values,
+                                                   labels = in_x_labels,
+                                                   name = "One person in..."))
+          })
+  })
+
+ethnicity_plot[[1]]
+```
+
+### Religion plot
+
+```{r make_religion_plot}
+religion_plot <- 
+  map(split[["religion"]],
+      \(x) quick_plot(x, "Population religions", "Religion"))
+
+religion_plot[[1]]
+```
+
+#### Household composition plots
+
+##### Grouped categories plots
+
+```{r make_household_grouped_categories_plot}
+household_super_plot <- 
+  map(split[["household-composition"]],
+      \(x){
+        summarise(x,
+                  proportion = sum(proportion),
+                  .by = c(com_label, nation_label, super_category,
+                          level)) |> 
+          rename(category = super_category) |> 
+          factor_arrange() |> 
+          quick_plot("Household composition overview", "Household type")
+        })
+
+household_super_plot[[1]]
+```
+
+##### Lone occupants plot
+
+```{r make_household_lone_occupants_plot}
+household_lone_plot <- 
+  map(split[["household-composition"]],
+      \(x){
+        filter(x, str_detect(category, "[Ll]one")) |> 
+          factor_arrange() |> 
+          quick_plot("Household composition (lone occupants & single parents)",
+                     "Household type") +
+          scale_x_discrete(
+            labels =
+              \(x){
+                case_match(
+                  x,
+                  "Lone occupant: aged 66 years and over" ~
+                    "Lone occupant\n(66+ y.o.)",
+                  "Lone occupant: other" ~ 
+                    "Lone occupant\n(other)",
+                  "Lone parent: all children non dependent" ~ 
+                    "Lone parent:\n(no dep. children)",
+                  "Lone parent: dependent children" ~ 
+                    "Lone parent\n(dep. children)")
+                })
+      })
+
+household_lone_plot[[1]]
+```
+
+##### Couples plot
+
+```{r make_couples_plot}
+household_copules_plot <- 
+  map(split[["household-composition"]],
+      \(x){
+        filter(x, str_detect(category, "[Cc]ouple")) |> 
+          factor_arrange() |> 
+          quick_plot("Household composition (couples)", 
+                     "Household type")
+      })
+
+household_copules_plot[[1]]
+```
+
+#### Other households plots
+
+```{r make_other_households}
+other_households_plot <- 
+  map(split[["household-composition"]],
+      \(x){
+        filter(x, !str_detect(category, "[Ll]one|[Cc]ouple")) |> 
+          factor_arrange() |>  
+          quick_plot("Household composition (other households)", 
+                     "Household type") +
+          scale_x_discrete(labels = \(x) str_replace(x, " (?=\\()", "\n"))
+      })
+
+other_households_plot[[1]]
+```
+
+#### Health plot
+
+```{r make_health_plot}
+health_plot <- 
+  map(split[["general-health"]],
+      \(x){
+        
+        x <- 
+          mutate(x, 
+                 label = label_percent(1)(proportion),
+                 label = 
+                   case_when(
+                     category == "Bad" ~ str_remove(label, "%"),
+                     TRUE              ~ label
+                   ),
+                 label_nudge =
+                   case_match(category,
+                              "Very bad" ~ 0.1, 
+                              .default = 0))
+        
+        nat_lab <- unique(x[["nation_label"]])
+        
+        ggplot(x, aes(fill = category,  x = proportion, y = level)) + 
+          
+          geom_col(position = "stack", alpha = 0.95, colour = "black") +
+          geom_text(aes(label = label, x = proportion + label_nudge),
+                    position = position_stack(0.5)) +
+          
+          ca_scale_fill_brew(low = "cyan", mid = "white", high = "green",
+                             name = "General\nhealth") +
+          scale_x_continuous(labels = label_percent(), name = "% Population",
+                             limits = c(0, 1.05), breaks = c(0, 1)) +
+          scale_y_discrete(labels = 
+                             rev(c(nat_lab, "Diocese", "CoM")),
+                           name = "Area") + 
+          
+          theme_bw() +
+          theme(
+            panel.grid = element_blank()) +
+          
+          ggtitle("General Health of Population", 
+                  str_c(x[["com_label"]], " Centre of Mission"))
+      })
+
+health_plot[[1]]
+```
+
+## Save plots
+
+```{r save_plots}
+plots <- list(
+  five_year_age = five_year_age_plot,
+  ethnicity     = ethnicity_plot,
+  religion      = religion_plot,
+  household_grouped = household_super_plot,
+  household_lone    = household_lone_plot,
+  household_couples = household_copules_plot,
+  other_households  = other_households_plot,
+  health            = health_plot
+)
+
+plots <- list_transpose(plots)
+
+plots <- imap(plots, \(x,y) c(x, com = y))
+
+# Save the plots as an RDS object using here()
+saveRDS(plots, here("data", "plots"))
+```
