@@ -8,10 +8,12 @@ editor: visual
 ## Libraries
 
 ```{r libraries}
+library(conflicted)
 library(fs)
 library(here)
 
 library(dplyr)
+conflicted::conflicts_prefer(dplyr::filter)
 library(ggplot2)
 library(scales)
 library(forcats)
@@ -24,7 +26,7 @@ library(carutools)
 ## Read data
 
 ```{r read}
-split <- readRDS(here("data", "england-wales_com-data-split.RDS"))
+split <- readRDS(here("data", "northern-ireland_com-data-split.RDS"))
 
 ## Need to coerce to a simple list, rather than a list_of - the
 ## constraints of the latter prevent serious manipulation here
