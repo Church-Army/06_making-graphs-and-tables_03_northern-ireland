@@ -86,7 +86,7 @@ age_five_year <-
   map(split[["age-five-year"]],
       \(x){
         out <- 
-          group_by(x, across(c(-count, -proportion, -old_category))) |> 
+          group_by(x, across(c(-count, -proportion))) |> 
           summarise(across(c(count, proportion), sum), .groups = "drop")
         
         out <- try_table(out)

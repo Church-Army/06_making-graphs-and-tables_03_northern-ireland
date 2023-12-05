@@ -85,7 +85,7 @@ quick_plot <- function(x, title = "", x_label = "",
     y_scale +
     labs(
       x = x_label,
-      caption = "Source: ONS Census 2021"
+      caption = "Source: NISRA Census 2021"
     ) +
     ggtitle(title, this_com) +
     theme_minimal() +
@@ -189,11 +189,11 @@ household_super_plot <-
       summarise(x,
         proportion = sum(proportion),
         .by = c(
-          com_label, nation_label, super_category,
+          com_label, nation_label, category_super,
           level
         )
       ) |>
-        rename(category = super_category) |>
+        rename(category = category_super) |>
         factor_arrange() |>
         quick_plot("Household composition overview", "Household type")
     }
