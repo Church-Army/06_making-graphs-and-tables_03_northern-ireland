@@ -4,7 +4,3 @@
 .httr-oauth
 .DS_Store
 .quarto
-
-## guff
-R/*_files/**
-R/*_cache/**
