@@ -90,7 +90,9 @@ unduplicate_levels <- function(x){
               out
               }),
           .by = category
-  )
+  ) |> 
+    group_by(statistic, level) |> 
+    mutate(proportion = count / sum(count))
   }
 
 ```
