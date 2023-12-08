@@ -22,8 +22,6 @@ library(scales)
 
 ## Read data
 
-Read in the data:
-
 ```{r read_data}
 split <- readRDS(here("data", "northern-ireland_split-formatted.RDS"))
 names(split)
@@ -136,4 +134,3 @@ quick_plot("religion")
 ```{r save_data}
 saveRDS(split, here("data", "split-formatted-ordered-grouped.RDS"))
 ```
-
