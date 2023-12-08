@@ -23,7 +23,7 @@ library(scales)
 ## Read data
 
 ```{r read_data}
-split <- readRDS(here("data", "england-and-wales_split-formatted.RDS"))
+split <- readRDS(here("data", "northern-ireland_split-formatted.RDS"))
 names(split)
 ```
 
@@ -79,6 +79,20 @@ lump_category <- function(x, n){
   return(out)
 }
 
+unduplicate_levels <- function(x){
+  reframe(x,
+          across(
+            everything(),
+            \(y){
+              if(is.character(y))    out <- unique(y)
+              else if(is.numeric(y)) out <- sum(y)
+              
+              out
+              }),
+          .by = category
+  )
+  }
+
 ```
 
 ### Group and order ethnicity
@@ -87,7 +101,12 @@ lump_category <- function(x, n){
 
 quick_plot("ethnicity")
 
-split[["ethnicity"]] <-map(split[["ethnicity"]], order_by_level)
+split[["ethnicity"]] <- map(split[["ethnicity"]], 
+                            \(x){
+                              unduplicate_levels(x) |>
+                                order_by_level() |> 
+                                lump_category(5)
+                              })
 
 quick_plot("ethnicity")
 ```
@@ -100,7 +119,8 @@ quick_plot("religion")
 split[["religion"]] <-
   map(split[["religion"]],
       \(x) {
-        order_by_level(x) |>
+        unduplicate_levels(x) |> 
+          order_by_level(x) |>
           lump_category(5)
       })
 
