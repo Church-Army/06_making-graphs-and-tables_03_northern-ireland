@@ -289,9 +289,9 @@ split[["household-composition"]] <-
 
 ggplot(split[["household-composition"]] |> 
          filter(com == sample(com, 1)) |> 
-         group_by(level, category_super) |> 
+         group_by(level, super_category) |> 
          summarise(proportion = sum(proportion)),
-       aes(x = category_super, y = proportion, fill = level)) + 
+       aes(x = super_category, y = proportion, fill = level)) + 
   geom_col(position = "dodge2", colour = "black") + 
   ca_scale_fill_discrete() + 
   theme_minimal()
