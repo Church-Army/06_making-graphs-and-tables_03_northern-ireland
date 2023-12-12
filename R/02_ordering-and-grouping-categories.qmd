@@ -89,10 +89,11 @@ unduplicate_levels <- function(x){
               
               out
               }),
-          .by = category
+          .by = c(category, level)
   ) |> 
     group_by(statistic, level) |> 
-    mutate(proportion = count / sum(count))
+    mutate(proportion = count / sum(count)) |> 
+    ungroup()
   }
 
 ```
@@ -134,3 +135,4 @@ quick_plot("religion")
 ```{r save_data}
 saveRDS(split, here("data", "split-formatted-ordered-grouped.RDS"))
 ```
+
