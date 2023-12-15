@@ -214,25 +214,10 @@ household_lone_plot <-
         quick_plot(
           "Household composition (lone occupants & single parents)",
           "Household type"
-        ) +
-        scale_x_discrete(
-          labels =
-            \(x){
-              case_match(
-                x,
-                "Lone occupant: aged 66 years and over" ~
-                  "Lone occupant\n(66+ y.o.)",
-                "Lone occupant: other" ~
-                  "Lone occupant\n(other)",
-                "Lone parent: all children non dependent" ~
-                  "Lone parent:\n(no dep. children)",
-                "Lone parent: dependent children" ~
-                  "Lone parent\n(dep. children)"
-              )
-            }
         )
-    }
+      }
   )
+
 
 household_lone_plot[[1]]
 ```
