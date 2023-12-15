@@ -8,3 +8,5 @@
 ## guff
 R/*_files/**
 R/*_cache/**
+
+/.quarto/
