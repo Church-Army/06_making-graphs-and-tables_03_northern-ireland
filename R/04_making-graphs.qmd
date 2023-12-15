@@ -44,7 +44,7 @@ quick_plot <- function(x, title = "", x_label = "",
     unique(x[["com_label"]]) |>
     str_c("Centre of Mission", sep = " ")
   
-  plot_sub <- str_c(this_com, " (", [["diocese_label"]], " Diocese)")
+  plot_sub <- str_c(this_com, " (", x[["diocese_label"]], " Diocese)")
 
   if (!in_x_scale) {
     y_scale <-
