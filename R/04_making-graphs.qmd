@@ -43,6 +43,8 @@ quick_plot <- function(x, title = "", x_label = "",
   this_com <-
     unique(x[["com_label"]]) |>
     str_c("Centre of Mission", sep = " ")
+  
+  plot_sub <- str_c(this_com, " (", [["diocese_label"]], " Diocese)")
 
   if (!in_x_scale) {
     y_scale <-
@@ -87,7 +89,7 @@ quick_plot <- function(x, title = "", x_label = "",
       x = x_label,
       caption = "Source: NISRA Census 2021"
     ) +
-    ggtitle(title, this_com) +
+    ggtitle(title, plot_sub) +
     theme_minimal() +
     theme(
       panel.grid.major.x = element_blank(),
@@ -129,7 +131,7 @@ five_year_age_plot <-
         proportion = sum(proportion),
         .by = c(
           level, category,
-          com_label, nation_label
+          ends_with("_label")
         )
       ) |>
         quick_plot("Population ages", "Age") +
@@ -189,8 +191,8 @@ household_super_plot <-
       summarise(x,
         proportion = sum(proportion),
         .by = c(
-          com_label, nation_label, category_super,
-          level
+          ends_with("_label"),
+          category_super, level
         )
       ) |>
         rename(category = category_super) |>
@@ -315,7 +317,8 @@ health_plot <-
         ) +
         ggtitle(
           "General Health of Population",
-          str_c(x[["com_label"]], " Centre of Mission")
+          str_c(x[["com_label"]], " Centre of Mission",
+                " (", x[["diocese_label"]], " Diocese)")
         )
     }
   )
