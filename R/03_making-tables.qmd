@@ -129,7 +129,7 @@ household_composition_super <-
       \(x){
         group_by(x, across(c(-proportion, -count, -category))) |> 
           summarise(across(c(proportion, count), sum), .groups = "drop") |> 
-          try_table(super_category, arrange_col = super_category)
+          try_table(category_super, arrange_col = category_super)
       })
 
 kable(household_composition_super[[1]])
@@ -140,7 +140,7 @@ Basic:
 ```{r basic}
 household_composition <- 
   map(split[["household-composition"]],
-      \(x) try_table(x, arrange_col = super_category))
+      \(x) try_table(x, arrange_col = category_super))
 
 kable(household_composition[[1]])
 ```
