@@ -1,0 +1,15 @@
+project:
+  title: "05_compiling-com-tables_01_england-and-wales"
+  output-dir: reports
+  render:
+    - R/01_formatting-data.qmd
+    - R/02_ordering-and-grouping-categories.qmd
+    - R/03_making-tables.qmd
+    - R/04_making-graphs.qmd
+    - R/05_combining-plots-and-figures.qmd
+format:
+  html:
+    highlight-style: github
+    toc: false
+    self-contained: true
+    code-tools: true

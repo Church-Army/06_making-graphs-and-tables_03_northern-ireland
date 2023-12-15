@@ -24,36 +24,11 @@ jobs:
       - name: Setup renv
         uses: r-lib/actions/setup-renv@v2
 
-      - name: Render 01
+      - name: Render project
         uses: quarto-dev/quarto-actions/render@v2
         with:
-          to: html 
-          path: R/01_formatting-data.qmd
+          to: html # If set, it will be equivalent to `quarto render --to html`
 
-      - name: Render 02
-        uses: quarto-dev/quarto-actions/render@v2
-        with:
-          to: html 
-          path: R/02_ordering-and-grouping-categories.qmd
-
-      - name: Render 03
-        uses: quarto-dev/quarto-actions/render@v2
-        with:
-          to: html
-          path: R/03_making-tables.qmd
-
-      - name: Render 04
-        uses: quarto-dev/quarto-actions/render@v2
-        with:
-          to: html
-          path: R/04_making-graphs.qmd
-
-      - name: Render 05
-        uses: quarto-dev/quarto-actions/render@v2
-        with:
-          to: html
-          path: R/05_combining-plots-and-figures.qmd
-          
       - run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
