@@ -3130,7 +3130,7 @@ Attaching package: &#39;rlang&#39;</code></pre>
 <span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>  stat_col <span class="ot">&lt;-</span> <span class="fu">enexpr</span>(stat_col)</span>
 <span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>  cat_col  <span class="ot">&lt;-</span> <span class="fu">enexpr</span>(cat_col)</span>
 <span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>  nation <span class="ot">&lt;-</span> <span class="fu">unique</span>(x[[<span class="st">&quot;nation&quot;</span>]])</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>  nation <span class="ot">&lt;-</span> <span class="fu">unique</span>(x[[<span class="st">&quot;nation_label&quot;</span>]])</span>
 <span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>  out <span class="ot">&lt;-</span></span>
 <span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(x, <span class="sc">!!</span>arrange_col) <span class="sc">|&gt;</span> </span>
@@ -3140,7 +3140,7 @@ Attaching package: &#39;rlang&#39;</code></pre>
 <span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> level) <span class="sc">|&gt;</span> </span>
 <span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rename</span>(<span class="at">CoM =</span> <span class="st">&quot;centre-of-mission&quot;</span>,</span>
 <span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a>           <span class="sc">!!</span><span class="at">nation :=</span> <span class="st">&quot;nation&quot;</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">category =</span> <span class="fu">str_remove_all</span>(<span class="sc">!!</span>cat_col, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">category =</span> <span class="fu">str_replace_all</span>(<span class="sc">!!</span>cat_col, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>, <span class="st">&quot; &quot;</span>)) <span class="sc">|&gt;</span> </span>
 <span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(category, CoM, diocese, <span class="sc">!!</span>nation) <span class="sc">|&gt;</span></span>
 <span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rename_with</span>(capitalise, <span class="sc">-</span><span class="dv">1</span>) <span class="sc">|&gt;</span> </span>
 <span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a>    <span class="fu">column_to_rownames</span>(<span class="st">&quot;category&quot;</span>)</span>
@@ -3168,7 +3168,7 @@ Attaching package: &#39;rlang&#39;</code></pre>
 <span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>age_five_year[[<span class="dv">1</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>                CoM Diocese Northern-ireland
+<pre><code>                CoM Diocese Northern-Ireland
 0-9 years old   13%     12%              13%
 10-19 years old 12%     12%              13%
 20-29 years old 12%     13%              12%
@@ -3185,7 +3185,7 @@ Attaching package: &#39;rlang&#39;</code></pre>
 <th style="text-align: left;"></th>
 <th style="text-align: left;">CoM</th>
 <th style="text-align: left;">Diocese</th>
-<th style="text-align: left;">Northern-ireland</th>
+<th style="text-align: left;">Northern-Ireland</th>
 </tr>
 </thead>
 <tbody>
@@ -3248,7 +3248,7 @@ Attaching package: &#39;rlang&#39;</code></pre>
 <th style="text-align: left;"></th>
 <th style="text-align: left;">CoM</th>
 <th style="text-align: left;">Diocese</th>
-<th style="text-align: left;">Northern-ireland</th>
+<th style="text-align: left;">Northern-Ireland</th>
 </tr>
 </thead>
 <tbody>
@@ -3298,7 +3298,7 @@ Attaching package: &#39;rlang&#39;</code></pre>
 <th style="text-align: left;"></th>
 <th style="text-align: left;">CoM</th>
 <th style="text-align: left;">Diocese</th>
-<th style="text-align: left;">Northern-ireland</th>
+<th style="text-align: left;">Northern-Ireland</th>
 </tr>
 </thead>
 <tbody>
@@ -3309,25 +3309,25 @@ Attaching package: &#39;rlang&#39;</code></pre>
 <td style="text-align: left;">42%</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Noreligion</td>
+<td style="text-align: left;">No religion</td>
 <td style="text-align: left;">9%</td>
 <td style="text-align: left;">23%</td>
 <td style="text-align: left;">17%</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">OtherChristian</td>
+<td style="text-align: left;">Other Christian</td>
 <td style="text-align: left;">7%</td>
 <td style="text-align: left;">40%</td>
 <td style="text-align: left;">37%</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Notstated</td>
+<td style="text-align: left;">Not stated</td>
 <td style="text-align: left;">2%</td>
 <td style="text-align: left;">2%</td>
 <td style="text-align: left;">2%</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Otherreligions</td>
+<td style="text-align: left;">Other religions</td>
 <td style="text-align: left;">1%</td>
 <td style="text-align: left;">2%</td>
 <td style="text-align: left;">1%</td>
@@ -3349,7 +3349,7 @@ Attaching package: &#39;rlang&#39;</code></pre>
 <th style="text-align: left;"></th>
 <th style="text-align: left;">CoM</th>
 <th style="text-align: left;">Diocese</th>
-<th style="text-align: left;">Northern-ireland</th>
+<th style="text-align: left;">Northern-Ireland</th>
 </tr>
 </thead>
 <tbody>
@@ -3408,7 +3408,7 @@ Attaching package: &#39;rlang&#39;</code></pre>
 <th style="text-align: left;"></th>
 <th style="text-align: left;">CoM</th>
 <th style="text-align: left;">Diocese</th>
-<th style="text-align: left;">Northern-ireland</th>
+<th style="text-align: left;">Northern-Ireland</th>
 </tr>
 </thead>
 <tbody>
@@ -3454,60 +3454,60 @@ Attaching package: &#39;rlang&#39;</code></pre>
 <th style="text-align: left;"></th>
 <th style="text-align: left;">CoM</th>
 <th style="text-align: left;">Diocese</th>
-<th style="text-align: left;">Northern-ireland</th>
+<th style="text-align: left;">Northern-Ireland</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">Couple w/o children dep.</td>
+<td style="text-align: left;">Couple w/ o children dep.</td>
 <td style="text-align: left;">9%</td>
 <td style="text-align: left;">8%</td>
 <td style="text-align: left;">9%</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Couple w/dep. children</td>
+<td style="text-align: left;">Couple w/ dep. children</td>
 <td style="text-align: left;">18%</td>
 <td style="text-align: left;">19%</td>
 <td style="text-align: left;">20%</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Couple(no children)</td>
+<td style="text-align: left;">Couple (no children)</td>
 <td style="text-align: left;">11%</td>
 <td style="text-align: left;">14%</td>
 <td style="text-align: left;">13%</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Lone occupant(66+ y.o)</td>
+<td style="text-align: left;">Lone occupant (66+ y.o)</td>
 <td style="text-align: left;">11%</td>
 <td style="text-align: left;">12%</td>
 <td style="text-align: left;">12%</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Lone occupant(other)</td>
+<td style="text-align: left;">Lone occupant (other)</td>
 <td style="text-align: left;">19%</td>
 <td style="text-align: left;">19%</td>
 <td style="text-align: left;">19%</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Lone parent w/no children dep.</td>
+<td style="text-align: left;">Lone parent w/ no children dep.</td>
 <td style="text-align: left;">7%</td>
 <td style="text-align: left;">5%</td>
 <td style="text-align: left;">6%</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Lone parent w/dep. children</td>
+<td style="text-align: left;">Lone parent w/ dep. children</td>
 <td style="text-align: left;">10%</td>
 <td style="text-align: left;">8%</td>
 <td style="text-align: left;">9%</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Otherhouseholds</td>
+<td style="text-align: left;">Other households</td>
 <td style="text-align: left;">6%</td>
 <td style="text-align: left;">5%</td>
 <td style="text-align: left;">4%</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Other families(inc. all 66+ y.o.)</td>
+<td style="text-align: left;">Other families (inc. all 66+ y.o.)</td>
 <td style="text-align: left;">8%</td>
 <td style="text-align: left;">9%</td>
 <td style="text-align: left;">9%</td>
@@ -3539,30 +3539,30 @@ Attaching package: &#39;rlang&#39;</code></pre>
 <th style="text-align: left;"></th>
 <th style="text-align: left;">CoM</th>
 <th style="text-align: left;">Diocese</th>
-<th style="text-align: left;">Northern-ireland</th>
+<th style="text-align: left;">Northern-Ireland</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">Lone occupant(other)</td>
+<td style="text-align: left;">Lone occupant (other)</td>
 <td style="text-align: left;">19%</td>
 <td style="text-align: left;">19%</td>
 <td style="text-align: left;">19%</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Lone occupant(66+ y.o)</td>
+<td style="text-align: left;">Lone occupant (66+ y.o)</td>
 <td style="text-align: left;">11%</td>
 <td style="text-align: left;">12%</td>
 <td style="text-align: left;">12%</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Lone parent w/dep. children</td>
+<td style="text-align: left;">Lone parent w/ dep. children</td>
 <td style="text-align: left;">10%</td>
 <td style="text-align: left;">8%</td>
 <td style="text-align: left;">9%</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Lone parent w/no children dep.</td>
+<td style="text-align: left;">Lone parent w/ no children dep.</td>
 <td style="text-align: left;">7%</td>
 <td style="text-align: left;">5%</td>
 <td style="text-align: left;">6%</td>
@@ -3581,24 +3581,24 @@ Attaching package: &#39;rlang&#39;</code></pre>
 <th style="text-align: left;"></th>
 <th style="text-align: left;">CoM</th>
 <th style="text-align: left;">Diocese</th>
-<th style="text-align: left;">Northern-ireland</th>
+<th style="text-align: left;">Northern-Ireland</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">Couple w/dep. children</td>
+<td style="text-align: left;">Couple w/ dep. children</td>
 <td style="text-align: left;">18%</td>
 <td style="text-align: left;">19%</td>
 <td style="text-align: left;">20%</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Couple(no children)</td>
+<td style="text-align: left;">Couple (no children)</td>
 <td style="text-align: left;">11%</td>
 <td style="text-align: left;">14%</td>
 <td style="text-align: left;">13%</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Couple w/o children dep.</td>
+<td style="text-align: left;">Couple w/ o children dep.</td>
 <td style="text-align: left;">9%</td>
 <td style="text-align: left;">8%</td>
 <td style="text-align: left;">9%</td>
@@ -3617,18 +3617,18 @@ Attaching package: &#39;rlang&#39;</code></pre>
 <th style="text-align: left;"></th>
 <th style="text-align: left;">CoM</th>
 <th style="text-align: left;">Diocese</th>
-<th style="text-align: left;">Northern-ireland</th>
+<th style="text-align: left;">Northern-Ireland</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">Other families(inc. all 66+ y.o.)</td>
+<td style="text-align: left;">Other families (inc. all 66+ y.o.)</td>
 <td style="text-align: left;">8%</td>
 <td style="text-align: left;">9%</td>
 <td style="text-align: left;">9%</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Otherhouseholds</td>
+<td style="text-align: left;">Other households</td>
 <td style="text-align: left;">6%</td>
 <td style="text-align: left;">5%</td>
 <td style="text-align: left;">4%</td>
@@ -4033,7 +4033,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb30-57"><a href="#cb30-57" aria-hidden="true" tabindex="-1"></a>  stat_col <span class="ot">&lt;-</span> <span class="fu">enexpr</span>(stat_col)</span>
 <span id="cb30-58"><a href="#cb30-58" aria-hidden="true" tabindex="-1"></a>  cat_col  <span class="ot">&lt;-</span> <span class="fu">enexpr</span>(cat_col)</span>
 <span id="cb30-59"><a href="#cb30-59" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb30-60"><a href="#cb30-60" aria-hidden="true" tabindex="-1"></a>  nation <span class="ot">&lt;-</span> <span class="fu">unique</span>(x[[<span class="st">&quot;nation&quot;</span>]])</span>
+<span id="cb30-60"><a href="#cb30-60" aria-hidden="true" tabindex="-1"></a>  nation <span class="ot">&lt;-</span> <span class="fu">unique</span>(x[[<span class="st">&quot;nation_label&quot;</span>]])</span>
 <span id="cb30-61"><a href="#cb30-61" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb30-62"><a href="#cb30-62" aria-hidden="true" tabindex="-1"></a>  out <span class="ot">&lt;-</span></span>
 <span id="cb30-63"><a href="#cb30-63" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(x, <span class="sc">!!</span>arrange_col) <span class="sc">|&gt;</span> </span>
@@ -4043,7 +4043,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb30-67"><a href="#cb30-67" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> level) <span class="sc">|&gt;</span> </span>
 <span id="cb30-68"><a href="#cb30-68" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rename</span>(<span class="at">CoM =</span> <span class="st">&quot;centre-of-mission&quot;</span>,</span>
 <span id="cb30-69"><a href="#cb30-69" aria-hidden="true" tabindex="-1"></a>           <span class="sc">!!</span><span class="at">nation :=</span> <span class="st">&quot;nation&quot;</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb30-70"><a href="#cb30-70" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">category =</span> <span class="fu">str_remove_all</span>(<span class="sc">!!</span>cat_col, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb30-70"><a href="#cb30-70" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">category =</span> <span class="fu">str_replace_all</span>(<span class="sc">!!</span>cat_col, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>, <span class="st">&quot; &quot;</span>)) <span class="sc">|&gt;</span> </span>
 <span id="cb30-71"><a href="#cb30-71" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(category, CoM, diocese, <span class="sc">!!</span>nation) <span class="sc">|&gt;</span></span>
 <span id="cb30-72"><a href="#cb30-72" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rename_with</span>(capitalise, <span class="sc">-</span><span class="dv">1</span>) <span class="sc">|&gt;</span> </span>
 <span id="cb30-73"><a href="#cb30-73" aria-hidden="true" tabindex="-1"></a>    <span class="fu">column_to_rownames</span>(<span class="st">&quot;category&quot;</span>)</span>
