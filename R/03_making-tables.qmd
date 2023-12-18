@@ -57,7 +57,7 @@ make_table <- function(x,
   stat_col <- enexpr(stat_col)
   cat_col  <- enexpr(cat_col)
   
-  nation <- unique(x[["nation"]])
+  nation <- unique(x[["nation_label"]])
   
   out <-
     arrange(x, !!arrange_col) |> 
