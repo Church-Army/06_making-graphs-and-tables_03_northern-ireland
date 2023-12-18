@@ -268,7 +268,7 @@ split[["household-composition"]] <-
           "Couple w/\ndep. children",
         
         "single_family_household_couple_family_household_all_children_non_dependent" ~ 
-          "Couple w/\no children dep.",
+          "Couple w/\nno children dep.",
         
         "single_family_household_couple_family_household_no_children" ~ 
           "Couple\n(no children)",
