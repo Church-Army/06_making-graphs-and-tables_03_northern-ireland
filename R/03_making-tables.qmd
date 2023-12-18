@@ -67,7 +67,7 @@ make_table <- function(x,
     pivot_wider(names_from = level) |> 
     rename(CoM = "centre-of-mission",
            !!nation := "nation") |> 
-    mutate(category = str_remove_all(!!cat_col, "\n")) |> 
+    mutate(category = str_replace_all(!!cat_col, "\n", " ")) |> 
     select(category, CoM, diocese, !!nation) |>
     rename_with(capitalise, -1) |> 
     column_to_rownames("category")
